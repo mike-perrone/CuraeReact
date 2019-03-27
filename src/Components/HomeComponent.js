@@ -7,7 +7,9 @@ class HomeComponent extends React.Component {
     registerInfo: {
       username: "",
       password: ""
-    }
+    },
+    usernameErrors: "",
+    passwordErrors: ""
   };
 
   getUserAndPass = event => {
@@ -22,17 +24,30 @@ class HomeComponent extends React.Component {
     const userAndPass = { ...this.state.registerInfo };
     userAndPass[event.target.name] = event.target.value;
     this.setState({ registerInfo: userAndPass });
-    Axios.post(
-      "https://localhost:44332/api/auth/register",
-      this.state.registerInfo
-    ).then(
-      response => {
-        console.log(response);
+
+    fetch("https://localhost:44332/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
       },
-      error => {
-        console.log(error);
-      }
-    );
+      body: JSON.stringify({
+        username: this.state.registerInfo.username,
+        password: this.state.registerInfo.password
+      })
+    })
+      .then(response => response.json())
+      .then(res => {
+        const swing = Object.keys(res);
+        swing.map(individualError => {
+          res["Username"] === undefined
+            ? this.setState({ usernameErrors: "" })
+            : this.setState({ usernameErrors: res["Username"] });
+          res["Password"] === undefined
+            ? this.setState({ passwordErrors: "" })
+            : this.setState({ passwordErrors: res["Password"] });
+        });
+      })
+      .catch(error => console.log(error));
   };
 
   render() {
@@ -72,7 +87,13 @@ class HomeComponent extends React.Component {
                       placeholder="Username"
                       name="username"
                       onChange={this.getUserAndPass}
-                    />
+                    />{" "}
+                    {this.state.usernameErrors !== "" &&
+                      this.state.usernameErrors !== undefined && (
+                        <span style={{ color: "white" }}>
+                          {this.state.usernameErrors}
+                        </span>
+                      )}
                   </div>
 
                   <div className="form-group">
@@ -84,7 +105,13 @@ class HomeComponent extends React.Component {
                       name="password"
                       value={this.state.registerInfo.password}
                       onChange={this.getUserAndPass}
-                    />
+                    />{" "}
+                    {this.state.passwordErrors !== "" &&
+                      this.state.passwordErrors !== undefined && (
+                        <span style={{ color: "white" }}>
+                          {this.state.passwordErrors}
+                        </span>
+                      )}
                   </div>
                   <div className="form-group text-center">
                     <button
