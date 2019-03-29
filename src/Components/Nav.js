@@ -1,61 +1,40 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios";
+import React from "react";
 import { Dropdown } from "react-bootstrap";
+import { withRouter, NavLink } from "react-router-dom";
 
-const Nav = () => {
-  const [loginInfo, setLoginInfo] = useState({ username: "", password: "" });
-  const [token, getTokenInfo] = useState();
-
-  const getLoginInfoInConsole = event => {
-    const realValues = { ...loginInfo };
-    realValues[event.target.name] = event.target.value;
-    setLoginInfo(realValues);
-    console.log(loginInfo);
-  };
-
-  const submitLoginInfo = event => {
-    event.preventDefault();
-    const realValues = { ...loginInfo };
-    realValues[event.target.name] = event.target.value;
-    setLoginInfo(realValues);
-    console.log(loginInfo);
-    axios
-      .post("https://localhost:44332/api/auth/login", loginInfo)
-      .then(response => {
-        localStorage.setItem("token", response.data.token);
-        getTokenInfo(localStorage.getItem("token"));
-      })
-      .catch(error => {
-        console.log(error);
-      });
-  };
-
+const Nav = props => {
   return (
-    <nav className="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-      <a className="navbar-brand" href="#">
+    <nav className="navbar navbar-expand-md navbar-dark bg-dark">
+      <NavLink className="navbar-brand" to="/">
         Firal
-      </a>
-      <ul className="navbar-nav mr-auto">
-        <li className="nav-item active">
-          <a className="nav-link" href="#">
-            Matches
-          </a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link" href="#">
-            Lists
-          </a>
-        </li>
-        <li className="nav-item">
-          <a className="nav-link" href="#">
-            Messages
-          </a>
-        </li>
-      </ul>
-      {token !== "" && localStorage.getItem("token") && (
+      </NavLink>
+      {props.token === localStorage.getItem("token") && (
+        <ul className="navbar-nav mr-auto">
+          <li className="nav-item">
+            <NavLink className="nav-link" to="/matches">
+              Matches
+            </NavLink>
+          </li>
+          <li className="nav-item">
+            <NavLink className="nav-link" to="/likes">
+              Who likes me!
+            </NavLink>
+          </li>
+          <li className="nav-item">
+            <NavLink className="nav-link" to="/messages">
+              Messages
+            </NavLink>
+          </li>
+        </ul>
+      )}
+      {props.token !== "" && localStorage.getItem("token") && (
         <Dropdown>
-          <Dropdown.Toggle variant="success" id="dropdown-basic">
-            Welcome {loginInfo.username}
+          <Dropdown.Toggle
+            variant="success"
+            id="dropdown-basic"
+            className="ml-auto"
+          >
+            Welcome {props.usersName}
           </Dropdown.Toggle>
 
           <Dropdown.Menu>
@@ -66,7 +45,7 @@ const Nav = () => {
             <Dropdown.Item
               onClick={() => {
                 localStorage.removeItem("token");
-                getTokenInfo("");
+                props.getTokenInfo("");
               }}
             >
               <i className="fas fa-sign-out-alt" /> Logout
@@ -75,29 +54,29 @@ const Nav = () => {
         </Dropdown>
       )}
 
-      {!token && !localStorage.getItem("token") && (
-        <form className="form-inline mt-2 mt-md-0">
+      {!props.token && !localStorage.getItem("token") && (
+        <form className="form-inline mt-2 mt-md-0 ml-auto">
           <input
             className="form-control mr-sm-2"
             type="text"
-            value={loginInfo.username}
-            onChange={getLoginInfoInConsole}
+            value={props.loginInfo.username}
+            onChange={props.getLoginInfoInConsole}
             name="username"
             placeholder="Email"
           />
           <input
             className="form-control mr-sm-2"
             type="text"
-            onChange={getLoginInfoInConsole}
-            value={loginInfo.password}
+            onChange={props.getLoginInfoInConsole}
+            value={props.loginInfo.password}
             name="password"
             placeholder="Password"
           />
 
           <button
-            disabled={!loginInfo.email && !loginInfo.password}
+            disabled={!props.loginInfo.email && !props.loginInfo.password}
             className="btn btn-outline-success my-2 my-sm-0"
-            onClick={submitLoginInfo}
+            onClick={props.submitLoginInfo}
           >
             Login
           </button>
@@ -107,4 +86,4 @@ const Nav = () => {
   );
 };
 
-export default Nav;
+export default withRouter(Nav);
