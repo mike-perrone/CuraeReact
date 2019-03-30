@@ -2,18 +2,30 @@ import React, { useEffect, useState } from "react";
 import HomeComponent from "./Components/HomeComponent";
 import Nav from "./Components/Nav";
 import "./App.css";
-import { Route, Switch } from "react-router-dom";
+import { Route, Switch, Redirect } from "react-router-dom";
 import Messages from "./Components/Messages";
 import LikeList from "./Components/LikeList";
 import Matches from "./Components/Matches";
 import axios from "axios";
+
 let jwtDecode = require("jwt-decode");
+
 
 const App = () => {
   const [loginInfo, setLoginInfo] = useState({ username: "", password: "" });
   const [token, getTokenInfo] = useState();
   const [usersName, setUsersName] = useState("");
   const [loggedIn, setLoggedIn] = useState(false);
+
+  const PrivateRoute = ({ component: Component, ...rest }) => (
+    <Route
+      {...rest}
+      render={props =>(
+        loggedIn === true ? <Component {...props} /> : <Redirect to='/login'
+       />
+      )}
+    />
+  );
 
   useEffect(() => {
     if (localStorage.getItem("token")) {
@@ -45,6 +57,7 @@ const App = () => {
         localStorage.setItem("token", response.data.token);
         getTokenInfo(localStorage.getItem("token"));
         setUsersName(loginInfo.username);
+        setLoggedIn(true);
       })
       .catch(error => {
         console.log(error);
@@ -63,12 +76,15 @@ const App = () => {
       />
       <Switch>
         <Route exact path="/" component={HomeComponent} />
-        <Route path="/messages" component={Messages} />
-        <Route path="/likes" component={LikeList} />
-        <Route path="/matches" component={Matches} />
+        <PrivateRoute path="/messages" component={Messages} />
+        <PrivateRoute path="/likes" component={LikeList} />
+        <PrivateRoute path="/matches" component={Matches} />
       </Switch>
     </div>
   );
 };
+
+
+
 
 export default App;
