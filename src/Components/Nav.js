@@ -3,6 +3,7 @@ import { Dropdown } from "react-bootstrap";
 import { withRouter, NavLink } from "react-router-dom";
 
 const Nav = props => {
+
   return (
     <nav className="navbar navbar-expand-md navbar-dark bg-dark">
       <NavLink className="navbar-brand" to="/">
@@ -41,15 +42,12 @@ const Nav = props => {
             <Dropdown.Item href="#/action-1">
               <i className="fa fa-user" /> Edit Profile
             </Dropdown.Item>
-            <Dropdown.Item href="#/action-2">Another action</Dropdown.Item>
-            <Dropdown.Item
-              onClick={() => {
-                localStorage.removeItem("token");
-                props.getTokenInfo("");
-              }}
-            >
+            <Dropdown.Item Link>Another action</Dropdown.Item>
+             <NavLink style={{paddingLeft: '20px'}} to='/' onClick={() => 
+            { localStorage.removeItem("token");
+              props.getTokenInfo("") }}>
               <i className="fas fa-sign-out-alt" /> Logout
-            </Dropdown.Item>
+              </NavLink>
           </Dropdown.Menu>
         </Dropdown>
       )}
@@ -77,6 +75,7 @@ const Nav = props => {
             disabled={!props.loginInfo.email && !props.loginInfo.password}
             className="btn btn-outline-success my-2 my-sm-0"
             onClick={props.submitLoginInfo}
+            
           >
             Login
           </button>

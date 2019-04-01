@@ -25,7 +25,7 @@ class HomeComponent extends React.Component {
     userAndPass[event.target.name] = event.target.value;
     this.setState({ registerInfo: userAndPass });
 
-    fetch("https://localhost:44332/api/auth/register", {
+    fetch("https://localhost:44302/api/auth/register", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

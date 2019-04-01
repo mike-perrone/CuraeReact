@@ -5,7 +5,7 @@ import "./App.css";
 import { Route, Switch, Redirect } from "react-router-dom";
 import Messages from "./Components/Messages";
 import LikeList from "./Components/LikeList";
-import Matches from "./Components/Matches";
+import MemberList from "./Components/MembersList";
 import axios from "axios";
 
 let jwtDecode = require("jwt-decode");
@@ -52,7 +52,7 @@ const App = () => {
     setLoginInfo(realValues);
     console.log(loginInfo);
     axios
-      .post("https://localhost:44332/api/auth/login", loginInfo)
+      .post("https://localhost:44302/api/auth/login", loginInfo)
       .then(response => {
         localStorage.setItem("token", response.data.token);
         getTokenInfo(localStorage.getItem("token"));
@@ -78,7 +78,7 @@ const App = () => {
         <Route exact path="/" component={HomeComponent} />
         <PrivateRoute path="/messages" component={Messages} />
         <PrivateRoute path="/likes" component={LikeList} />
-        <PrivateRoute path="/matches" component={Matches} />
+        <Route path="/matches" render={(props) => <MemberList {...props} token={token}/> }/>
       </Switch>
     </div>
   );
